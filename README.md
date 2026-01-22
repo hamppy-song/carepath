@@ -92,7 +92,6 @@ This step creates a per-pair embedding dictionary (`.pkl`) keyed by `"{disease}_
 ### Example (MSI)
 
 ```md
-```bash
 python -m extract_embeddings.main \
   --network_file "MSI dataset/graph.txt" \
   --node_type_file "MSI dataset/nodetypes.tsv" \
