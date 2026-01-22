@@ -75,7 +75,7 @@ def save_embedding_files(
     drug_atc_dict = dict(zip(atc_df["db_id"], atc_df["atc_group"]))
 
     # de_m용 (원본 코드 그대로: 실제는 [:3])
-    drug_atc_dict_5 = dict(zip(atc_df["db_id"], atc_df["atc_code"].str[:3]))
+    drug_atc_dict_3 = dict(zip(atc_df["db_id"], atc_df["atc_code"].str[:3]))
 
     # 그래프 로드 (원본에서 delimiter=' ' 고정이었음 → 그대로 유지)
     G = read_graph(netf, weighted=weighted, directed=directed, delimiter=' ')
@@ -115,7 +115,7 @@ def save_embedding_files(
 
     drug_mech_emb_mixed = build_neighbor_pool_from_atc(
         drug_list=drug_list,
-        drug_atc_dict=drug_atc_dict_5,   # ✅ 원본 그대로
+        drug_atc_dict=drug_atc_dict_3,   
         mech_emb_dict=drug_mech_emb,
         k=None,
         alpha=ALPHA,
@@ -132,7 +132,7 @@ def save_embedding_files(
     print('Generating fixed Disease-Gene-Drug Paths and grouping by Disease-Drug pairs...')
     grouped_embeddings = {}
 
-    total_pairs = list(set(load_disease_drug_pairs(pairf)))
+    total_pairs = sorted(set(load_disease_drug_pairs(pairf)))
 
     for disease, drug, label in tqdm(total_pairs, desc="Processing disease-drug pairs"):
         paths = find_fixed_paths(G, disease, drug, max_genes)
