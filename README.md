@@ -40,7 +40,7 @@ Given a disease–drug pair **(s, d)**:
 
 ---
 
-## Repository structure (example)
+## Repository structure
 
 
 ---
