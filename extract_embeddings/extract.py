@@ -9,9 +9,9 @@ from tqdm import tqdm
 from node2vec import Node2Vec
 from biolinkbert_embeddings import get_biolinkbert_cls_embedding
 
-from utils import read_graph, set_seed
+from carepath.utils import read_graph, set_seed
 
-from graph_utils import (
+from carepath.graph_utils import (
     load_node_types,
     classify_nodes_from_types,
     clean_graph_nodes,
@@ -19,12 +19,12 @@ from graph_utils import (
     teleport_drug,
 )
 
-from prompts import (
+from carepath.prompts import (
     build_id_to_name_mapping,
     path_to_prompt,
 )
 
-from mech_context import (
+from carepath.mech_context import (
     build_entity_contexts_safe,
     mech_emb_from_ctx_texts,
     build_neighbor_pool_from_atc,
