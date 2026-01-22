@@ -1,41 +1,52 @@
+# extract_embeddings/config.py
 import argparse
+from pathlib import Path
 
 def parse_args():
-    parser = argparse.ArgumentParser()
+    p = argparse.ArgumentParser()
 
-    parser.add_argument('--network_file', type=str,
-                        default='/data/project/haerin/DREAMwalk/data/extracted/data/graph.txt')
-    parser.add_argument('--node_type_file', type=str,
-                        default='/data/project/haerin/DREAMwalk/data/extracted/data/nodetypes.tsv')
-    parser.add_argument('--output_file', type=str,
-                        default='/data/project/haerin/DREAMwalk/DREAMwalk/embedding_output/0107_embeddings_prompt5_biolinkbert_drugdisease_sim_drug1_atc6_all.pkl')
-    parser.add_argument('--seed', type=int, default=42)
-    parser.add_argument('--tp_factor', type=float, default=0.5)
-    parser.add_argument('--weighted', action='store_true', help='use weighted edges')
-    parser.add_argument('--unweighted', action='store_true', help='force unweighted edges')
-    parser.add_argument('--directed', type=bool, default=False)
-    parser.add_argument('--workers', type=int, default=5)
-    parser.add_argument('--net_delimiter', type=str, default='\t')  # (원래 코드에서도 실사용은 안 됨)
-    parser.add_argument('--max_genes', type=int, default=5)
-    parser.add_argument('--pair_file', type=str,
-                        default='/data/project/haerin/DREAMwalk/DREAMwalk/dda_all.tsv')
+    p.add_argument("--dataset_dir", type=str, required=True,
+                   help="Dataset folder path (e.g., ./MSI dataset)")
 
-    # 기존처럼 Jupyter에서도 돌아가게 parse_known_args 유지
-    args, _ = parser.parse_known_args()
+    p.add_argument("--network_file", type=str, default=None)
+    p.add_argument("--node_type_file", type=str, default=None)
+    p.add_argument("--pair_file", type=str, default=None)
+    p.add_argument("--atc_file", type=str, default=None)
+
+    p.add_argument("--output_file", type=str, required=True)
+    p.add_argument("--seed", type=int, default=42)
+    p.add_argument("--weighted", type=bool, default=True)
+    p.add_argument("--directed", type=bool, default=False)
+    p.add_argument("--workers", type=int, default=5)
+    p.add_argument("--net_delimiter", type=str, default="\t")
+    p.add_argument("--max_genes", type=int, default=5)
+    p.add_argument("--tp_factor", type=float, default=0.5)
+
+    args, _ = p.parse_known_args()
+    d = Path(args.dataset_dir)
+
+    # dataset_dir 기준으로 기본 파일 자동 세팅 (사용자가 개별 인자로 덮어쓰기 가능)
+    netf      = args.network_file or str(d / "graph.txt")
+    nodetypef = args.node_type_file or str(d / "nodetypes.tsv")   # ✅ 네가 nodetypes.tsv를 넣어둔 경우
+    pairf     = args.pair_file or str(d / "dda_labels.tsv")
+    atcf      = args.atc_file or str(d / "7_drug_classification_df.tsv")
 
     return {
-        'netf': args.network_file,
-        'outputf': args.output_file,
-        'nodetypef': args.node_type_file,
-        'tp_factor': args.tp_factor,
-        'seed': args.seed,
-        'weighted' = args.weighted and (not args.unweighted)
-        'directed': args.directed,
-        'workers': args.workers,
-        'net_delimiter': args.net_delimiter,
-        'max_genes': args.max_genes,
-        'pairf': args.pair_file
+        "dataset_dir": str(d),
+        "netf": netf,
+        "nodetypef": nodetypef,
+        "pairf": pairf,
+        "atc_file": atcf,
+        "outputf": args.output_file,
+        "seed": args.seed,
+        "tp_factor": args.tp_factor,
+        "weighted": args.weighted,
+        "directed": args.directed,
+        "workers": args.workers,
+        "net_delimiter": args.net_delimiter,
+        "max_genes": args.max_genes,
     }
+
 
 
 def parse_run_id():
