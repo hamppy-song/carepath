@@ -101,3 +101,16 @@ python -m extract_embeddings.main \
   --max_genes 2 \
   --workers 5 \
   --run_id 0
+```
+
+## 2) Train and Prediction
+```md
+python -m prediction.train_and_prediction \
+  --embedding_file "outputs/msi_embeddings.pkl" \
+  --pair_file "MSI dataset/dda_labels.tsv" \
+  --seed 42 \
+  --n_splits 5 \
+  --splits "random,drug,disease" \
+  --output_file "outputs/cv_results.tsv" \
+  --pred_detail_file "outputs/cv_pred_details.tsv"
+```
