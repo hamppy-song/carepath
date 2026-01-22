@@ -1,17 +1,22 @@
+# carepath/mech_context.py
 import math
 import random
-import numpy as np
-from collections import defaultdict, Counter
+from collections import Counter, defaultdict
+from typing import Dict, List, Optional, Tuple
 
-from sklearn.neighbors import NearestNeighbors
+import numpy as np
 from scipy.sparse import csr_matrix
+from sklearn.neighbors import NearestNeighbors
 
 from biolinkbert_embeddings import get_biolinkbert_cls_embedding
 
-# global cache (원본 동일)
-emb_cache = {}  # text -> np.ndarray(768)
 
-def embed_cached(text: str):
+# global cache (원본과 동일)
+emb_cache: Dict[str, np.ndarray] = {}
+
+
+def embed_cached(text: str) -> np.ndarray:
+    """CLS embedding with simple in-memory cache."""
     if text in emb_cache:
         return emb_cache[text]
     e = get_biolinkbert_cls_embedding(text)
@@ -19,7 +24,7 @@ def embed_cached(text: str):
     return e
 
 
-def is_gene_or_protein(node, node2type):
+def is_gene_or_protein(node: str, node2type: Dict[str, str]) -> bool:
     t = node2type.get(node, "")
     if t in ("gene", "protein"):
         return True
@@ -27,9 +32,13 @@ def is_gene_or_protein(node, node2type):
     return s.startswith("G") or s.startswith("P")
 
 
-def build_entity_contexts_safe(G, node2type, id2name, max_neighbors=30):
+def build_entity_contexts_safe(G, node2type: Dict[str, str], id2name: Dict[str, str], max_neighbors: int = 30):
+    """
+    Leak-safe entity contexts:
+    - Only gene/protein neighbors (gene/protein or prefix G/P).
+    """
     drug_ctx = defaultdict(list)
-    dis_ctx  = defaultdict(list)
+    dis_ctx = defaultdict(list)
 
     def _is_gp(n, t):
         if t in ("gene", "protein"):
@@ -43,7 +52,7 @@ def build_entity_contexts_safe(G, node2type, id2name, max_neighbors=30):
             continue
 
         nbrs = list(G.neighbors(node))
-        # (원본에서도 샘플링 주석처리되어 있음)
+        # 원본도 sampling은 주석처리: 그대로 유지
         node_name = id2name.get(node, node)
 
         for nb in nbrs:
@@ -60,14 +69,20 @@ def build_entity_contexts_safe(G, node2type, id2name, max_neighbors=30):
     return drug_ctx, dis_ctx
 
 
-def mech_emb_from_ctx_texts(ctx_texts, topM=30):
+def mech_emb_from_ctx_texts(ctx_texts: List[str], topM: int = 30) -> Optional[np.ndarray]:
     if not ctx_texts:
         return None
     embs = [embed_cached(t) for t in ctx_texts[:topM]]
     return np.mean(embs, axis=0)
 
 
-def build_weighted_gene_vectors(G, node2type, nodes, max_1hop=500, use_idf=True):
+def build_weighted_gene_vectors(
+    G,
+    node2type: Dict[str, str],
+    nodes: List[str],
+    max_1hop: int = 500,
+    use_idf: bool = True,
+) -> Tuple[csr_matrix, List[str], List[str]]:
     node_order = list(nodes)
 
     node_gene_lists = []
@@ -107,7 +122,14 @@ def build_weighted_gene_vectors(G, node2type, nodes, max_1hop=500, use_idf=True)
     return X, node_order, genes_all
 
 
-def build_knn_neighbor_pool_from_sparse(X, node_order, mech_emb_dict, k=10, alpha=0.5, weighted_by_sim=True):
+def build_knn_neighbor_pool_from_sparse(
+    X: csr_matrix,
+    node_order: List[str],
+    mech_emb_dict: Dict[str, np.ndarray],
+    k: int = 10,
+    alpha: float = 0.5,
+    weighted_by_sim: bool = True,
+) -> Dict[str, np.ndarray]:
     row_norm = np.sqrt(X.multiply(X).sum(axis=1)).A1 + 1e-9
     Xn = X.multiply(1.0 / row_norm[:, None])
 
@@ -139,7 +161,14 @@ def build_knn_neighbor_pool_from_sparse(X, node_order, mech_emb_dict, k=10, alph
     return mech_new_dict
 
 
-def build_neighbor_pool_from_atc(drug_list, drug_atc_dict, mech_emb_dict, k=10, alpha=0.5, sample=False):
+def build_neighbor_pool_from_atc(
+    drug_list: List[str],
+    drug_atc_dict: Dict[str, str],
+    mech_emb_dict: Dict[str, np.ndarray],
+    k: Optional[int] = 10,
+    alpha: float = 0.5,
+    sample: bool = False,  # 호환성 유지용(현재 미사용)
+) -> Dict[str, np.ndarray]:
     group2drugs = defaultdict(list)
     for d in drug_list:
         g = drug_atc_dict.get(d)
