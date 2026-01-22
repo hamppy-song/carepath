@@ -1,4 +1,4 @@
-# prediction/train.py
+# prediction/train_and_prediction.py
 import pickle
 import numpy as np
 import pandas as pd
@@ -40,14 +40,14 @@ def load_dataset(embeddingf: str, pairf: str):
     return np.array(xs), np.array(ys), np.array(drugs), np.array(diseases)
 
 
-def return_scores(y_true, y_prob):
-    scores = []
-    for metric in [accuracy_score, roc_auc_score, average_precision_score, f1_score]:
-        if metric in [roc_auc_score, average_precision_score]:
-            scores.append(metric(y_true, y_prob))
-        else:
-            scores.append(metric(y_true, np.round(y_prob)))
-    return scores  # [ACC, AUROC, AUPRC, F1]
+def return_scores(y_true, y_prob, thr=0.5):
+    y_pred = (y_prob >= thr).astype(int)
+    acc = accuracy_score(y_true, y_pred)
+    auc = roc_auc_score(y_true, y_prob)
+    aupr = average_precision_score(y_true, y_prob)
+    f1 = f1_score(y_true, y_pred)
+    return [acc, auc, aupr, f1]
+
 
 
 def make_stacking_clf(base_models_cfg, seed: int, meta_C: float, stack_cv: int):
