@@ -11,7 +11,8 @@ def parse_args():
                         default='/data/project/haerin/DREAMwalk/DREAMwalk/embedding_output/0107_embeddings_prompt5_biolinkbert_drugdisease_sim_drug1_atc6_all.pkl')
     parser.add_argument('--seed', type=int, default=42)
     parser.add_argument('--tp_factor', type=float, default=0.5)
-    parser.add_argument('--weighted', type=bool, default=True)
+    parser.add_argument('--weighted', action='store_true', help='use weighted edges')
+    parser.add_argument('--unweighted', action='store_true', help='force unweighted edges')
     parser.add_argument('--directed', type=bool, default=False)
     parser.add_argument('--workers', type=int, default=5)
     parser.add_argument('--net_delimiter', type=str, default='\t')  # (원래 코드에서도 실사용은 안 됨)
@@ -28,7 +29,7 @@ def parse_args():
         'nodetypef': args.node_type_file,
         'tp_factor': args.tp_factor,
         'seed': args.seed,
-        'weighted': args.weighted,
+        'weighted' = args.weighted and (not args.unweighted)
         'directed': args.directed,
         'workers': args.workers,
         'net_delimiter': args.net_delimiter,
