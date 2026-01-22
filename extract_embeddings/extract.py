@@ -78,7 +78,7 @@ def save_embedding_files(
     drug_atc_dict_3 = dict(zip(atc_df["db_id"], atc_df["atc_code"].str[:3]))
 
     # 그래프 로드 (원본에서 delimiter=' ' 고정이었음 → 그대로 유지)
-    G = read_graph(netf, weighted=weighted, directed=directed, delimiter=' ')
+    G = read_graph(netf, weighted=weighted, directed=directed, delimiter=net_delimiter)
     print(f"# of nodes: {len(G.nodes())}")
     print(f"# of edges: {len(G.edges())}")
 
