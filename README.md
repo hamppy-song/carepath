@@ -14,7 +14,8 @@ This repository includes code to:
 ---
 
 ## What CAREPath does (high-level)
-![Uploading KakaoTalk_Photo_2026-01-22-18-13-47.png…]()
+![CAREPath pipeline](carepath/pipeline.png)
+
 
 Given a disease–drug pair *(s, d)*:
 
