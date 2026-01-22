@@ -41,42 +41,6 @@ Given a disease–drug pair *(s, d)*:
 
 ---
 
-## Repository structure
-
-```text
-.
-├── MSI dataset/
-│   ├── graph.txt
-│   ├── nodetypes.tsv                      # node -> type (drug/disease/gene/protein/...)
-│   ├── 1_drug_to_protein.tsv
-│   ├── 2_indication_to_protein.tsv
-│   ├── 3_protein_to_protein.tsv
-│   ├── 4_protein_to_biological_function.tsv
-│   ├── 5_biological_function_to_biological_function.tsv
-│   ├── 7_drug_classification_df.tsv       # ATC codes (for drug pooling / teleport)
-│   └── dda_labels.tsv                     # columns: drug, disease, label
-│
-├── carepath/
-│   ├── __init__.py
-│   ├── graph_utils.py                     # graph/path utilities + ATC teleport
-│   ├── mech_context.py                    # mechanism context + pooling
-│   ├── prompts.py                         # id->name mapping + prompt builder
-│   └── utils.py                           # read_graph + set_seed
-│
-├── extract_embeddings/
-│   ├── __init__.py
-│   ├── config.py                          # CLI args for embedding extraction
-│   ├── extract.py                         # main embedding extraction pipeline
-│   └── main.py                            # entry point (supports run_id)
-│
-├── prediction/
-│   ├── __init__.py
-│   ├── config.py                          # CLI args + optional JSON model config
-│   └── train_and_prediction.py            # CV training + evaluation + per-pair outputs
-│
-└── README.md
-```
-
 
 ## Usage
 
