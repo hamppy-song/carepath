@@ -76,20 +76,16 @@ Given a disease–drug pair *(s, d)*:
 │
 └── README.md
 
-## Usage
+Usage
 
-> Below are minimal runnable commands you can copy/paste.  
-> Replace paths with your dataset locations.
+Below are minimal runnable commands you can copy/paste.
+Replace paths with your dataset locations.
 
----
+1) Extract embeddings
 
-## 1) Extract embeddings
+This step creates a per-pair embedding dictionary (.pkl) keyed by "{disease}__{drug}".
 
-This step creates a per-pair embedding dictionary (`.pkl`) keyed by `"{disease}__{drug}"`.
-
-### Example (MSI)
-
-```bash
+Example (MSI)
 python -m extract_embeddings.main \
   --network_file "MSI dataset/graph.txt" \
   --node_type_file "MSI dataset/nodetypes.tsv" \
@@ -100,3 +96,16 @@ python -m extract_embeddings.main \
   --workers 5 \
   --run_id 0
 
+2) Train + predict (cross-validation)
+
+This step loads the embedding .pkl and runs CV evaluation.
+It saves cv_results.tsv and per-pair prediction files like cv_pred_details_{split}.tsv.
+
+python -m prediction.train_and_prediction \
+  --embedding_file "outputs/msi_embeddings.pkl" \
+  --pair_file "MSI dataset/dda_labels.tsv" \
+  --seed 42 \
+  --n_splits 5 \
+  --splits "random,drug,disease" \
+  --output_file "outputs/cv_results.tsv" \
+  --pred_detail_file "outputs/cv_pred_details.tsv"
