@@ -9,8 +9,8 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import StratifiedKFold, GroupKFold
 from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, average_precision_score
 
-from utils import set_seed  # 너 utils.py 그대로 사용
-from config import parse_args
+from carepath.utils import set_seed
+from .config import parse_args
 
 
 def load_dataset(embeddingf: str, pairf: str):
