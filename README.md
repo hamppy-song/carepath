@@ -78,7 +78,7 @@ Given a disease–drug pair *(s, d)*:
 
 ## Usage
 
-> Below are minimal runnable commands you can copy/paste.
+> Below are minimal runnable commands you can copy/paste.  
 > Replace paths with your dataset locations.
 
 ---
@@ -99,15 +99,4 @@ python -m extract_embeddings.main \
   --max_genes 5 \
   --workers 5 \
   --run_id 0
-
-##Example
-
-python -m prediction.train_and_prediction \
-  --embedding_file "outputs/msi_embeddings.pkl" \
-  --pair_file "MSI dataset/dda_labels.tsv" \
-  --seed 42 \
-  --n_splits 5 \
-  --splits "random,drug,disease" \
-  --output_file "outputs/cv_results.tsv" \
-  --pred_detail_file "outputs/cv_pred_details.tsv"
 
