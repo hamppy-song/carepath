@@ -75,7 +75,7 @@ Given a disease–drug pair *(s, d)*:
 │   └── train_and_prediction.py            # CV training + evaluation + per-pair outputs
 │
 └── README.md
-
+'''
 Usage
 
 Below are minimal runnable commands you can copy/paste.
