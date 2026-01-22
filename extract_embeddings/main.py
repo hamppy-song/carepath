@@ -26,5 +26,8 @@ if __name__ == '__main__':
         workers=base_args['workers'],
         net_delimiter=base_args['net_delimiter'],
         max_genes=base_args['max_genes'],
-        pairf=base_args['pairf']
+        pairf=base_args['pairf'],
+        dataset_dir=base_args["dataset_dir"],   
+        atc_file=base_args.get("atc_file"),    
+)
     )
