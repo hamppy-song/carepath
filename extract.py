@@ -15,11 +15,7 @@ from .io_utils import (
     save_pickle,
 )
 from .graph_utils import (
-    set_seed,
-    read_graph,
-    find_fixed_paths,
-    load_drug_atc_dict,
-    teleport_drug,
+    set_seed, read_graph, find_fixed_paths, teleport_drug
 )
 from .prompts import path_to_prompt, fallback_prompt
 from .mech_context import (
