@@ -98,6 +98,6 @@ python -m extract_embeddings.main \
   --pair_file "MSI dataset/dda_labels.tsv" \
   --output_file "outputs/msi_embeddings.pkl" \
   --seed 42 \
-  --max_genes 5 \
+  --max_genes 2 \
   --workers 5 \
   --run_id 0
