@@ -46,14 +46,11 @@ Given a disease–drug pair *(s, d)*:
 
 ## Usage
 
-## 📦 Multiscale Interactome (MSI) Network
+### MSI data (download)
+We use the Multiscale Interactome (MSI) resources provided by the official repository:
+https://github.com/snap-stanford/multiscale-interactome
 
-Our work builds on the **Multiscale Interactome (MSI)** network, a publicly available biological interaction network that integrates drug targets, disease perturbations, protein–protein interactions, and a hierarchy of biological functions into a unified graph. The official MSI network repository is available on GitHub:  
-🔗 https://github.com/snap-stanford/multiscale-interactome  [oai_citation:2‡GitHub](https://github.com/snap-stanford/multiscale-interactome)
-
-
-Below are minimal runnable commands you can copy/paste.  
-Replace paths with your dataset locations.
+We use the supplementary dataset **#6 (approved drug–disease pairs)** from the MSI release as labels, and split it into **train/val/test** for our experiments.
 
 ---
 
