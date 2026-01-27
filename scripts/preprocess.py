@@ -98,7 +98,6 @@ def pick_two_cols(df: pd.DataFrame, want_left: List[str], want_right: List[str])
 
 
 def edges_from(df: pd.DataFrame, etype: int, directed_flag: int = 0, weight: float = 1.0) -> List[Tuple[str, str, int, float, int]]:
-    # default: use first 2 cols; if headers exist, still okay
     a, b = df.iloc[:, 0], df.iloc[:, 1]
     out = []
     for u, v in zip(a, b):
@@ -111,7 +110,6 @@ def edges_from(df: pd.DataFrame, etype: int, directed_flag: int = 0, weight: flo
 
 
 def normalize_pairs_6(df: pd.DataFrame) -> pd.DataFrame:
-    # dataset #6 often: drug, drug_name, disease, disease_name
     cols = [str(c).lower() for c in df.columns]
     drug_col = None
     dis_col = None
@@ -121,7 +119,6 @@ def normalize_pairs_6(df: pd.DataFrame) -> pd.DataFrame:
         if dis_col is None and (c == "disease" or "disease" in c):
             dis_col = df.columns[i]
     if drug_col is None or dis_col is None:
-        # fallback: assume col0=drug, col2=disease if 4 cols, else first two
         if df.shape[1] >= 3:
             drug_col, dis_col = df.columns[0], df.columns[2]
         else:
@@ -193,7 +190,6 @@ def main():
 
     extract(tar_path, ex_dir)
 
-    # locate files
     if args.files_json:
         spec = json.loads(Path(args.files_json).read_text(encoding="utf-8"))
         f1 = ex_dir / spec["drug_protein"]
@@ -216,7 +212,6 @@ def main():
         except Exception:
             f7 = None
 
-    # build graph (etype_id: 1..5)
     edges: List[Tuple[str, str, int, float, int]] = []
     drugs: Set[str] = set()
     diseases: Set[str] = set()
@@ -241,7 +236,6 @@ def main():
         elif t == 5:
             functions.add(u); functions.add(v)
 
-    # write outputs
     write_graph(out_dir / "graph.txt", edges)
 
     nodemap: Dict[str, str] = {}
@@ -255,7 +249,6 @@ def main():
         nodemap.setdefault(x, "function")
     write_nodetypes(out_dir / "nodetypes.tsv", nodemap)
 
-    # labels from dataset #6 + random negatives
     df6 = read_table(f6)
     pos = normalize_pairs_6(df6)
     pos_set = set((r["drug"], r["disease"]) for _, r in pos.iterrows())
@@ -273,10 +266,6 @@ def main():
     lab_df = pd.DataFrame(lab, columns=["drug", "disease", "label"]).drop_duplicates()
     (out_dir / "dda_labels.tsv").parent.mkdir(parents=True, exist_ok=True)
     lab_df.to_csv(out_dir / "dda_labels.tsv", sep="\t", index=False)
-
-    # optional: copy ATC file path note
-    if f7 is not None:
-        (out_dir / "atc_source.txt").write_text(f"{f7}\n", encoding="utf-8")
 
     (out_dir / "SOURCE.txt").write_text(
         "MSI source:\n"
