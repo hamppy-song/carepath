@@ -11,12 +11,10 @@ from sklearn.neighbors import NearestNeighbors
 from biolinkbert_embeddings import get_biolinkbert_cls_embedding
 
 
-# global cache (원본과 동일)
 emb_cache: Dict[str, np.ndarray] = {}
 
 
 def embed_cached(text: str) -> np.ndarray:
-    """CLS embedding with simple in-memory cache."""
     if text in emb_cache:
         return emb_cache[text]
     e = get_biolinkbert_cls_embedding(text)
@@ -33,10 +31,6 @@ def is_gene_or_protein(node: str, node2type: Dict[str, str]) -> bool:
 
 
 def build_entity_contexts_safe(G, node2type: Dict[str, str], id2name: Dict[str, str], max_neighbors: int = 30):
-    """
-    Leak-safe entity contexts:
-    - Only gene/protein neighbors (gene/protein or prefix G/P).
-    """
     drug_ctx = defaultdict(list)
     dis_ctx = defaultdict(list)
 
@@ -52,7 +46,6 @@ def build_entity_contexts_safe(G, node2type: Dict[str, str], id2name: Dict[str, 
             continue
 
         nbrs = list(G.neighbors(node))
-        # 원본도 sampling은 주석처리: 그대로 유지
         node_name = id2name.get(node, node)
 
         for nb in nbrs:
