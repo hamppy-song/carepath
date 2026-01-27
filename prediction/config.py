@@ -36,17 +36,14 @@ DEFAULT_BASE_MODELS = [
 def parse_args():
     p = argparse.ArgumentParser()
 
-    # data
     p.add_argument("--embedding_file", type=str, required=True)
     p.add_argument("--pair_file", type=str, required=True)
 
-    # run
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--n_splits", type=int, default=5)
     p.add_argument("--splits", type=str, default="random,drug,disease",
                    help="Comma-separated: random,drug,disease")
 
-    # outputs
     p.add_argument("--output_file", type=str, default="cv_results.tsv")
     p.add_argument("--pred_detail_file", type=str, default="cv_pred_details.tsv")
 
@@ -60,7 +57,6 @@ def parse_args():
 
     args = p.parse_args()
 
-    # load base models config
     base_models = DEFAULT_BASE_MODELS
     if args.xgb_config is not None:
         cfg_path = Path(args.xgb_config)
