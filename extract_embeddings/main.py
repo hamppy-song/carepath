@@ -3,7 +3,6 @@ import os
 from .config import parse_args, parse_run_id
 from .extract import save_embedding_files
 
-# 원본 코드 그대로 유지
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 if __name__ == '__main__':
