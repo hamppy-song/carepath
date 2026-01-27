@@ -25,9 +25,8 @@ def parse_args():
     args, _ = p.parse_known_args()
     d = Path(args.dataset_dir)
 
-    # dataset_dir 기준으로 기본 파일 자동 세팅 (사용자가 개별 인자로 덮어쓰기 가능)
     netf      = args.network_file or str(d / "graph.txt")
-    nodetypef = args.node_type_file or str(d / "nodetypes.tsv")   # ✅ 네가 nodetypes.tsv를 넣어둔 경우
+    nodetypef = args.node_type_file or str(d / "nodetypes.tsv")   
     pairf     = args.pair_file or str(d / "dda_labels.tsv")
     atcf      = args.atc_file or str(d / "7_drug_classification_df.tsv")
 
