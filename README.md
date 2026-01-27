@@ -58,24 +58,24 @@ We download MSI supplementary datasets **#1–#7**. In our pipeline:
 > We do not redistribute MSI data (raw or processed) in this repository. Please obtain the raw files from the official MSI release.
 
 ---
-## 0) Preprocess MSI data
+## 0) Preprocess data
 This step generates:
-- `MSI dataset/graph.txt`
-- `MSI dataset/nodetypes.tsv`
-- `MSI dataset/dda_labels.tsv`
+- `dataset/graph.txt`
+- `dataset/nodetypes.tsv`
+- `dataset/dda_labels.tsv`
 
 ```md
-# Download MSI data.tar.gz and preprocess (recommended)
-python scripts/preprocess_msi.py \
+# Download MSI data.tar.gz and preprocess
+python scripts/preprocess.py \
   --download \
-  --out_dir "MSI dataset" \
+  --out_dir "dataset" \
   --neg_ratio 1.0 \
   --seed 42
 ```
 If you already have data.tar.gz, place it under data/raw/msi/data.tar.gz and run:
 ```md
-python scripts/preprocess_msi.py \
-  --out_dir "MSI dataset" \
+python scripts/preprocess.py \
+  --out_dir "dataset" \
   --neg_ratio 1.0 \
   --seed 42
 ```
