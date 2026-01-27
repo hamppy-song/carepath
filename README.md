@@ -50,7 +50,12 @@ Given a disease–drug pair *(s, d)*:
 We use the Multiscale Interactome (MSI) resources provided by the official repository:
 https://github.com/snap-stanford/multiscale-interactome
 
-We use the supplementary dataset **#6 (approved drug–disease pairs)** from the MSI release as labels, and split it into **train/val/test** for our experiments.
+We download MSI supplementary datasets **#1–#7**. In our pipeline:
+- **#1–#5** (interaction datasets) are used to construct the unified interaction graph (`graph.txt`) and node types (`nodetypes.tsv`).
+- **#6** (approved drug–disease pairs) is used as the positive label set, which we convert into `dda_labels.tsv` and augment with **random negative sampling**.
+- **#7** (ATC drug classes) is used for ATC-prefix–based drug context pooling in the mechanism-context module.
+
+> We do not redistribute MSI data (raw or processed) in this repository. Please obtain the raw files from the official MSI release.
 
 ---
 
