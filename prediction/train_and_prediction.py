@@ -122,7 +122,6 @@ def run_cv(args: dict, split_type: str):
         dis_test = diseases[te_idx]
         y_pred = (y_prob >= 0.5).astype(int)
 
-        # ====== fold-level prints (원래 너 로그 유지) ======
         print("\n[LOGIT SAMPLE] (first 20 in this fold)")
         for i in range(min(20, len(y_test))):
             print(
