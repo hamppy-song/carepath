@@ -6,9 +6,6 @@ import torch
 
 
 def read_graph(edgeList,weighted=True, directed=False,delimiter=' '):
-    '''
-    Reads the input network in networkx.
-    '''
     if weighted:
         G = nx.read_edgelist(edgeList, nodetype=str, 
                              data=(('type',int),('weight',float),('id',int)), 
