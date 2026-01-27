@@ -84,14 +84,14 @@ python scripts/preprocess.py \
 
 This step creates a per-pair embedding dictionary (`.pkl`) keyed by `"{disease}__{drug}"`.
 
-### Example (MSI)
+### Example
 
 ```md
 python -m extract_embeddings.main \
-  --network_file "MSI dataset/graph.txt" \
-  --node_type_file "MSI dataset/nodetypes.tsv" \
-  --pair_file "MSI dataset/dda_labels.tsv" \
-  --output_file "outputs/msi_embeddings.pkl" \
+  --network_file "dataset/graph.txt" \
+  --node_type_file "dataset/nodetypes.tsv" \
+  --pair_file "dataset/dda_labels.tsv" \
+  --output_file "outputs/embeddings.pkl" \
   --seed 42 \
   --max_genes 2 \
   --workers 5 \
@@ -101,8 +101,8 @@ python -m extract_embeddings.main \
 ## 2) Train and Prediction
 ```md
 python -m prediction.train_and_prediction \
-  --embedding_file "outputs/msi_embeddings.pkl" \
-  --pair_file "MSI dataset/dda_labels.tsv" \
+  --embedding_file "outputs/embeddings.pkl" \
+  --pair_file "dataset/dda_labels.tsv" \
   --seed 42 \
   --n_splits 5 \
   --splits "random,drug,disease" \
