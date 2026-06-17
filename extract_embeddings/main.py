@@ -29,4 +29,3 @@ if __name__ == '__main__':
         dataset_dir=base_args["dataset_dir"],   
         atc_file=base_args.get("atc_file"),    
 )
-    )
