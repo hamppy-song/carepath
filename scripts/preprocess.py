@@ -151,7 +151,6 @@ def sample_negatives(pos_pairs: Set[Tuple[str, str]], drugs: List[str], diseases
 
 
 def write_graph(path: Path, rows: List[Tuple[str, str, int, float, int]]) -> None:
-    # 모델의 read_graph(..., delimiter=' ')에 맞춰 공백 구분으로 저장
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         for u, v, t, w, dr in rows:
@@ -159,7 +158,6 @@ def write_graph(path: Path, rows: List[Tuple[str, str, int, float, int]]) -> Non
 
 
 def write_nodetypes(path: Path, mapping: Dict[str, str]) -> None:
-    # 모델의 load_node_types(... header=0)에 맞춰 헤더 추가
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         f.write("node\ttype\n")
@@ -168,7 +166,6 @@ def write_nodetypes(path: Path, mapping: Dict[str, str]) -> None:
 
 
 def write_atc(path: Path, atc_src: Path) -> None:
-    # 모델이 읽는 컬럼명(db_id, atc_code)으로 정규화해서 ATC(#7) 출력
     path.parent.mkdir(parents=True, exist_ok=True)
     df = read_table(atc_src)
     cols = [str(c).lower() for c in df.columns]
