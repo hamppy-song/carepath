@@ -5,8 +5,6 @@ from pathlib import Path
 
 def parse_args():
     p = argparse.ArgumentParser()
-    # dataset_dir는 선택: 주면 그 안에서 기본 파일명을 자동으로 잡고,
-    # 개별 파일 인자를 직접 주면 그게 우선한다.
     p.add_argument("--dataset_dir", type=str, default=None,
                    help="Dataset folder (e.g., ./dataset). Optional if individual file paths are given.")
     p.add_argument("--network_file", type=str, default=None)
