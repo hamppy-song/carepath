@@ -47,7 +47,7 @@ def parse_args():
     p.add_argument("--output_file", type=str, default="cv_results.tsv")
     p.add_argument("--pred_detail_file", type=str, default="cv_pred_details.tsv")
 
-    # model config (독자가 마음대로 바꾸게)
+    # model config 
     p.add_argument("--xgb_config", type=str, default=None,
                    help="Optional JSON file for base models. If omitted, uses DEFAULT_BASE_MODELS.")
     p.add_argument("--meta_C", type=float, default=1.0,
