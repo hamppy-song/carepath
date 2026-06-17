@@ -152,7 +152,7 @@ def save_embedding_files(
     print("Generating Disease-Gene-Drug paths and building pair embeddings...")
     grouped_embeddings = {}
 
-    total_pairs = sorted(set(load_disease_drug_pairs(pairf)))
+    total_pairs = list(set(load_disease_drug_pairs(pairf)))
 
     for disease, drug, label in tqdm(total_pairs, desc="Processing disease-drug pairs"):
         paths = find_fixed_paths(G, disease, drug, max_genes)
