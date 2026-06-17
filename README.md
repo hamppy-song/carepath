@@ -46,7 +46,15 @@ Given a disease–drug pair *(s, d)*:
 
 ---
 
+## Setup
 
+```bash
+pip install -r requirements.txt
+```
+
+BioLinkBERT (`michiyasunaga/BioLinkBERT-base`) is downloaded automatically from Hugging Face on first run. To use a custom cache location, set the `BIOLINKBERT_CACHE_DIR` environment variable.
+
+---
 ## Usage
 
 > The examples below use the **MSI** knowledge graph. The same pipeline applies to the other four BKGs (PrimeKG, Hetionet, SuppKG, KEGG50k) once each is preprocessed into the same `graph.txt` / `nodetypes.tsv` / `dda_labels.tsv` format.
