@@ -151,24 +151,45 @@ def sample_negatives(pos_pairs: Set[Tuple[str, str]], drugs: List[str], diseases
 
 
 def write_graph(path: Path, rows: List[Tuple[str, str, int, float, int]]) -> None:
+    # 모델의 read_graph(..., delimiter=' ')에 맞춰 공백 구분으로 저장
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         for u, v, t, w, dr in rows:
-            f.write(f"{u}\t{v}\t{t}\t{w}\t{dr}\n")
+            f.write(f"{u} {v} {t} {w} {dr}\n")
 
 
 def write_nodetypes(path: Path, mapping: Dict[str, str]) -> None:
+    # 모델의 load_node_types(... header=0)에 맞춰 헤더 추가
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
+        f.write("node\ttype\n")
         for n, ty in mapping.items():
             f.write(f"{n}\t{ty}\n")
+
+
+def write_atc(path: Path, atc_src: Path) -> None:
+    # 모델이 읽는 컬럼명(db_id, atc_code)으로 정규화해서 ATC(#7) 출력
+    path.parent.mkdir(parents=True, exist_ok=True)
+    df = read_table(atc_src)
+    cols = [str(c).lower() for c in df.columns]
+
+    id_i = next((i for i, c in enumerate(cols) if "db" in c or "drug" in c or "id" in c), 0)
+    atc_i = next((i for i, c in enumerate(cols) if "atc" in c), 1)
+
+    out = df.iloc[:, [id_i, atc_i]].copy()
+    out.columns = ["db_id", "atc_code"]
+    out["db_id"] = out["db_id"].astype(str).str.strip()
+    out["atc_code"] = out["atc_code"].astype(str).str.strip()
+    out = out.replace({"db_id": {"nan": None}, "atc_code": {"nan": None}})
+    out = out.dropna().drop_duplicates().reset_index(drop=True)
+    out.to_csv(path, sep="\t", index=False)
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--msi_url", default=MSI_TAR_URL)
     ap.add_argument("--raw_dir", default="data/raw/msi")
-    ap.add_argument("--out_dir", default="MSI dataset")
+    ap.add_argument("--out_dir", default="dataset")
     ap.add_argument("--download", action="store_true", help="Download MSI tarball (default: assumes already present)")
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--neg_ratio", type=float, default=1.0, help="negatives per positive (random sampling)")
@@ -249,6 +270,9 @@ def main():
         nodemap.setdefault(x, "function")
     write_nodetypes(out_dir / "nodetypes.tsv", nodemap)
 
+    if f7 is not None:
+        write_atc(out_dir / "7_drug_classification_df.tsv", f7)
+
     df6 = read_table(f6)
     pos = normalize_pairs_6(df6)
     pos_set = set((r["drug"], r["disease"]) for _, r in pos.iterrows())
@@ -273,7 +297,7 @@ def main():
         "Downloaded tarball:\n"
         f"{args.msi_url}\n\n"
         "Used supplementary datasets #1-#7 (1-5 graph, 6 labels, 7 ATC).\n"
-        "Outputs: graph.txt, nodetypes.tsv, dda_labels.tsv\n",
+        "Outputs: graph.txt, nodetypes.tsv, dda_labels.tsv, 7_drug_classification_df.tsv\n",
         encoding="utf-8",
     )
 
@@ -281,6 +305,8 @@ def main():
     print(f"  graph:      {out_dir / 'graph.txt'}")
     print(f"  nodetypes:  {out_dir / 'nodetypes.tsv'}")
     print(f"  labels:     {out_dir / 'dda_labels.tsv'}")
+    if f7 is not None:
+        print(f"  atc:        {out_dir / '7_drug_classification_df.tsv'}")
 
 
 if __name__ == "__main__":
