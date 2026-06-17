@@ -2,36 +2,52 @@
 import argparse
 from pathlib import Path
 
+
 def parse_args():
     p = argparse.ArgumentParser()
-
-    p.add_argument("--dataset_dir", type=str, required=True,
-                   help="Dataset folder path (e.g., ./MSI dataset)")
-
+    # dataset_dir는 선택: 주면 그 안에서 기본 파일명을 자동으로 잡고,
+    # 개별 파일 인자를 직접 주면 그게 우선한다.
+    p.add_argument("--dataset_dir", type=str, default=None,
+                   help="Dataset folder (e.g., ./dataset). Optional if individual file paths are given.")
     p.add_argument("--network_file", type=str, default=None)
     p.add_argument("--node_type_file", type=str, default=None)
     p.add_argument("--pair_file", type=str, default=None)
     p.add_argument("--atc_file", type=str, default=None)
-
     p.add_argument("--output_file", type=str, required=True)
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--weighted", type=bool, default=True)
     p.add_argument("--directed", type=bool, default=False)
     p.add_argument("--workers", type=int, default=5)
-    p.add_argument("--net_delimiter", type=str, default="\t")
+    p.add_argument("--net_delimiter", type=str, default=" ")
     p.add_argument("--max_genes", type=int, default=5)
     p.add_argument("--tp_factor", type=float, default=0.5)
-
     args, _ = p.parse_known_args()
-    d = Path(args.dataset_dir)
 
-    netf      = args.network_file or str(d / "graph.txt")
-    nodetypef = args.node_type_file or str(d / "nodetypes.tsv")   
-    pairf     = args.pair_file or str(d / "dda_labels.tsv")
-    atcf      = args.atc_file or str(d / "7_drug_classification_df.tsv")
+    d = Path(args.dataset_dir) if args.dataset_dir else None
+
+    def _resolve(explicit, default_name):
+        if explicit:
+            return explicit
+        if d is not None:
+            return str(d / default_name)
+        return None
+
+    netf      = _resolve(args.network_file, "graph.txt")
+    nodetypef = _resolve(args.node_type_file, "nodetypes.tsv")
+    pairf     = _resolve(args.pair_file, "dda_labels.tsv")
+    atcf      = _resolve(args.atc_file, "7_drug_classification_df.tsv")
+
+    missing = [name for name, val in
+               [("network_file", netf), ("node_type_file", nodetypef), ("pair_file", pairf)]
+               if val is None]
+    if missing:
+        raise ValueError(
+            f"Missing required path(s): {missing}. "
+            f"Provide --dataset_dir or the individual --{'/--'.join(missing)} argument(s)."
+        )
 
     return {
-        "dataset_dir": str(d),
+        "dataset_dir": str(d) if d is not None else None,
         "netf": netf,
         "nodetypef": nodetypef,
         "pairf": pairf,
@@ -45,7 +61,6 @@ def parse_args():
         "net_delimiter": args.net_delimiter,
         "max_genes": args.max_genes,
     }
-
 
 
 def parse_run_id():
