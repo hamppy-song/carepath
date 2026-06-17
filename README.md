@@ -131,8 +131,10 @@ python -m extract_embeddings.main \
 
 ## 2) Train and Prediction
 ```md
+mkdir -p outputs
+
 python -m prediction.train_and_prediction \
-  --embedding_file "outputs/embeddings.pkl" \
+  --embedding_file "outputs/embeddings_seed42.pkl" \
   --pair_file "dataset/dda_labels.tsv" \
   --seed 42 \
   --n_splits 5 \
