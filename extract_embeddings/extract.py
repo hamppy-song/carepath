@@ -7,7 +7,6 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from node2vec import Node2Vec
 from biolinkbert_embeddings import get_biolinkbert_cls_embedding
 
 from carepath.utils import read_graph, set_seed
@@ -97,11 +96,6 @@ def save_embedding_files(
 
     G = clean_graph_nodes(G)
 
-    print("Training Node2Vec...")
-    node2vec = Node2Vec(G, dimensions=128, walk_length=10, num_walks=100, workers=workers)
-    n2v_model = node2vec.fit(window=10, min_count=1, seed=seed, workers=workers)
-    print("Node2Vec training done.")
-
     disease_list, drug_list = classify_nodes_from_types(nodetypef)
     print(f"Found {len(disease_list)} diseases and {len(drug_list)} drugs")
 
@@ -163,9 +157,6 @@ def save_embedding_files(
 
         rep_paths = paths if len(paths) > 0 else []
 
-        drug_vec = n2v_model.wv[drug] if drug in n2v_model.wv else np.zeros(128, dtype=np.float32)
-        disease_vec = n2v_model.wv[disease] if disease in n2v_model.wv else np.zeros(128, dtype=np.float32)
-
         emb_list = []
         if rep_paths:
             for path in rep_paths:
@@ -194,7 +185,7 @@ def save_embedding_files(
             d_me = drug_mech_emb_mixed.get(drug, np.zeros(768, dtype=np.float32))
             s_me = disease_mech_emb_mixed.get(disease, np.zeros(768, dtype=np.float32))
 
-            final_emb = np.concatenate([drug_vec, disease_vec, bio_emb, d_me, s_me])
+            final_emb = np.concatenate([bio_emb, d_me, s_me])
 
             key = f"{disease}__{drug}"
             grouped_embeddings[key] = final_emb
