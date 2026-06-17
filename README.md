@@ -7,6 +7,8 @@
 
 It then fuses these signals with **Node2Vec topology features** and scores pairs using an **XGBoost-based stacking ensemble**.
 
+Across five biomedical knowledge graphs (MSI, PrimeKG, Hetionet, SuppKG, KEGG50k) and 18 baselines, CAREPath achieves the best overall **AUPRC**, including under the disease cold-start setting, with gains of up to **3.8%**.
+
 This repository includes code to:
 1) **Extract per-pair embeddings** (semantic path + mechanism context + Node2Vec)  
 2) **Run prediction and evaluation** (CV with random/drug/disease splits)
@@ -20,7 +22,8 @@ This repository includes code to:
 Given a disease–drug pair *(s, d)*:
 
 ### 1) Constrained semantic path encoding (DFS-like)
-- Enumerate short simple paths **s → gene(s) → d** with constraints (e.g., max hop=3, limited number of genes).
+- Enumerate short simple paths **s → gene(s) → d** with constraints (max hop=3, limited number of intermediate genes `k_max`).
+- We set `k_max = 2` based on a coverage–redundancy trade-off analysis across BKGs.
 - Convert each path into an NLI-style prompt:
   - `Premise: {disease} involves genes {g1, ..., gk}.`
   - `Hypothesis: {drug} can be repurposed to treat {disease}.`
@@ -31,7 +34,7 @@ Given a disease–drug pair *(s, d)*:
 ### 2) Mechanism context augmentation (BFS-like)
 - Build entity-level context from **1-hop gene/protein neighbors only** (to reduce direct disease–drug leakage).
 - Encode neighborhood sentences with BioLinkBERT and mean-pool into initial context embeddings.
-- Apply similarity-guided pooling + residual mixing:
+- Apply similarity-guided pooling + residual mixing (with mixing weights α for diseases and β for drugs):
   - **Drugs:** pool within ATC-prefix–related drugs
   - **Diseases:** pool via gene-signature similarity (cosine kNN on weighted gene vectors)
 - Produces robust context embeddings **Z_ctx^drug(d)** and **Z_ctx^dis(s)**, especially when paths are sparse/noisy.
@@ -45,6 +48,8 @@ Given a disease–drug pair *(s, d)*:
 
 
 ## Usage
+
+> The examples below use the **MSI** knowledge graph. The same pipeline applies to the other four BKGs (PrimeKG, Hetionet, SuppKG, KEGG50k) once each is preprocessed into the same `graph.txt` / `nodetypes.tsv` / `dda_labels.tsv` format.
 
 ### MSI data (download)
 We use the Multiscale Interactome (MSI) resources provided by the official repository:
