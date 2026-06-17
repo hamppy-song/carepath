@@ -5,12 +5,12 @@
 - **DFS-like constrained semantic path encoding** over short disease–gene–drug paths  
 - **BFS-like mechanism context augmentation** from 1-hop gene neighborhoods  
 
-It then fuses these signals with **Node2Vec topology features** and scores pairs using an **XGBoost-based stacking ensemble**.
+It fuses these two complementary signals and scores pairs using an **XGBoost-based stacking ensemble**.
 
 Across five biomedical knowledge graphs (MSI, PrimeKG, Hetionet, SuppKG, KEGG50k) and 18 baselines, CAREPath achieves the best overall **AUPRC**, including under the disease cold-start setting, with gains of up to **3.8%**.
 
 This repository includes code to:
-1) **Extract per-pair embeddings** (semantic path + mechanism context + Node2Vec)  
+1) **Extract per-pair embeddings** (semantic path + mechanism context)  
 2) **Run prediction and evaluation** (CV with random/drug/disease splits)
 
 ---
@@ -41,7 +41,7 @@ Given a disease–drug pair *(s, d)*:
 
 ### 3) Feature fusion + prediction
 - Concatenate features:
-  - `Node2Vec(drug)`, `Node2Vec(disease)`, `Z_path(s,d)`, `Z_ctx^drug(d)`, `Z_ctx^dis(s)`
+  - `Z_path(s,d)`, `Z_ctx^dis(s)`, `Z_ctx^drug(d)`
 - Score with an **XGBoost stacking ensemble** for final association probability.
 
 ---
