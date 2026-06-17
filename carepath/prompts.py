@@ -1,26 +1,47 @@
 # carepath/prompts.py
-from typing import Dict, List
+from typing import Dict, List, Optional
+from pathlib import Path
 import pandas as pd
 
 
+def _find_msi_file(keys: List[str], search_root: str) -> Optional[str]:
+    root = Path(search_root)
+    if not root.exists():
+        return None
+    best, best_score = None, -1
+    for p in root.rglob("*"):
+        if not p.is_file() or p.suffix.lower() not in {".tsv", ".csv", ".txt"}:
+            continue
+        name = p.name.lower()
+        score = sum(1 for k in keys if k in name)
+        if score >= len(keys) and score > best_score:
+            best, best_score = str(p), score
+    return best
+
+
 def build_id_to_name_mapping(
-    drug_tsv: str = "data/raw/msi/extracted/data/1_drug_to_protein.tsv",
-    disease_tsv: str = "data/raw/msi/extracted/data/2_indication_to_protein.tsv",
-    ppi_tsv: str = "data/raw/msi/extracted/data/3_protein_to_protein.tsv",
+    drug_tsv: str = None,
+    disease_tsv: str = None,
+    ppi_tsv: str = None,
+    search_root: str = "data/raw/msi/extracted",
 ) -> Dict[str, str]:
-    id2name = {}
-    drug_df = pd.read_csv(drug_tsv, sep="\t")
-    for _, row in drug_df.iterrows():
-        id2name[str(row["node_1"]).strip()] = str(row["node_1_name"]).strip()
-        id2name[str(row["node_2"]).strip()] = str(row["node_2_name"]).strip()
-    disease_df = pd.read_csv(disease_tsv, sep="\t")
-    for _, row in disease_df.iterrows():
-        id2name[str(row["node_1"]).strip()] = str(row["node_1_name"]).strip()
-        id2name[str(row["node_2"]).strip()] = str(row["node_2_name"]).strip()
-    ppi_df = pd.read_csv(ppi_tsv, sep="\t")
-    for _, row in ppi_df.iterrows():
-        id2name[str(row["node_1"]).strip()] = str(row["node_1_name"]).strip()
-        id2name[str(row["node_2"]).strip()] = str(row["node_2_name"]).strip()
+    if drug_tsv is None:
+        drug_tsv = _find_msi_file(["drug", "protein"], search_root)
+    if disease_tsv is None:
+        disease_tsv = _find_msi_file(["indication", "protein"], search_root)
+    if ppi_tsv is None:
+        ppi_tsv = _find_msi_file(["protein", "protein"], search_root)
+
+    id2name: Dict[str, str] = {}
+
+    for path in (drug_tsv, disease_tsv, ppi_tsv):
+        if path is None:
+            continue
+        df = pd.read_csv(path, sep="\t")
+        for _, row in df.iterrows():
+            id2name[str(row["node_1"]).strip()] = str(row["node_1_name"]).strip()
+            id2name[str(row["node_2"]).strip()] = str(row["node_2_name"]).strip()
+
     return id2name
 
 
