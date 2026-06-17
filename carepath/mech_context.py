@@ -63,9 +63,11 @@ def build_entity_contexts_safe(G, node2type: Dict[str, str], id2name: Dict[str, 
 
 
 def mech_emb_from_ctx_texts(ctx_texts: List[str], topM: int = 30) -> Optional[np.ndarray]:
+    # 논문/정답 코드대로: 1-hop 이웃 문장 전체를 사용 (truncation 없음)
+    # topM은 호환성 위해 시그니처에만 남겨두고 사용하지 않음
     if not ctx_texts:
         return None
-    embs = [embed_cached(t) for t in ctx_texts[:topM]]
+    embs = [embed_cached(t) for t in ctx_texts]
     return np.mean(embs, axis=0)
 
 
