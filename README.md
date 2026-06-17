@@ -60,6 +60,8 @@ We download MSI supplementary datasets **#1–#7**. In our pipeline:
 - **#6** (approved drug–disease pairs) is used as the positive label set, which we convert into `dda_labels.tsv` and augment with **random negative sampling**.
 - **#7** (ATC drug classes) is used for ATC-prefix–based drug context pooling in the mechanism-context module.
 
+> The preprocessing step keeps the extracted MSI files under `data/raw/msi/extracted/`. The embedding step reads these raw files to map node IDs to human-readable drug/disease/gene names, so do not delete that folder after preprocessing.
+
 > We do not redistribute MSI data (raw or processed) in this repository. Please obtain the raw files from the official MSI release.
 
 ---
@@ -68,6 +70,7 @@ This step generates:
 - `dataset/graph.txt`
 - `dataset/nodetypes.tsv`
 - `dataset/dda_labels.tsv`
+- `dataset/7_drug_classification_df.tsv` (ATC drug classes)
 
 ```md
 # Download MSI data.tar.gz and preprocess
@@ -89,13 +92,28 @@ python scripts/preprocess.py \
 
 This step creates a per-pair embedding dictionary (`.pkl`) keyed by `"{disease}__{drug}"`.
 
+Passing `--dataset_dir` lets the script locate all dataset files (`graph.txt`, `nodetypes.tsv`, `dda_labels.tsv`, and the ATC file) automatically.
+
 ### Example
+
+```md
+python -m extract_embeddings.main \
+  --dataset_dir "dataset" \
+  --output_file "outputs/embeddings.pkl" \
+  --seed 42 \
+  --max_genes 2 \
+  --workers 5 \
+  --run_id 0
+```
+
+You can also point to each file explicitly instead of `--dataset_dir`:
 
 ```md
 python -m extract_embeddings.main \
   --network_file "dataset/graph.txt" \
   --node_type_file "dataset/nodetypes.tsv" \
   --pair_file "dataset/dda_labels.tsv" \
+  --atc_file "dataset/7_drug_classification_df.tsv" \
   --output_file "outputs/embeddings.pkl" \
   --seed 42 \
   --max_genes 2 \
